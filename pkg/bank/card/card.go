@@ -4,22 +4,20 @@ import (
 	"bank/pkg/bank/types"
 )
 
-func PaymentSources(cards []types.Card) []types.PaymentSource {
-
-	var choosePayment []types.PaymentSource
-	for _, card := range cards {
-		if card.Balance < 0 {
-			continue
-		}
-		if !card.Active {
-			continue
-		}
-
-		choosePayment = append(choosePayment, types.PaymentSource{
-			Type:    "card",
-			Number:  string(card.PAN),
-			Balance: card.Balance,
-		})
+func Withdraw(card *types.Card, amount types.Money) {
+	const withdrawLimit = 20_000_00
+	if amount < 0 {
+		return
 	}
-	return choosePayment
+	if amount > withdrawLimit {
+		return
+	}
+	if !card.Active {
+		return
+	}
+	if card.Balance < amount {
+		return
+	}
+
+	card.Balance -= amount
 }
